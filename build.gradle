@@ -1,0 +1,92 @@
+plugins {
+    id 'java'
+    id 'io.qameta.allure' version '2.11.2'
+}
+
+group = 'org.delhivery'
+version = '0.0.1'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.testng:testng:7.8.0'
+    implementation 'io.rest-assured:rest-assured:5.4.0'
+    implementation 'io.rest-assured:json-schema-validator:5.4.0'
+    implementation 'io.qameta.allure:allure-testng:2.27.0'
+    implementation 'io.qameta.allure:allure-rest-assured:2.27.0'
+    implementation 'ch.qos.logback:logback-classic:1.4.14'
+    compileOnly 'org.projectlombok:lombok:1.18.32'
+    annotationProcessor 'org.projectlombok:lombok:1.18.32'
+    testRuntimeOnly 'org.aspectj:aspectjweaver:1.9.22.1'
+    implementation 'org.awaitility:awaitility:4.3.0'
+    implementation 'com.auth0:java-jwt:4.5.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.3'
+    implementation 'com.aventstack:extentreports:5.1.1'
+}
+
+allure {
+    version = '2.27.0'
+    autoconfigure = true
+}
+
+tasks.test {
+    useTestNG()
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+        showStandardStreams = true
+    }
+    systemProperty 'environment', System.getProperty('environment', 'qa')
+    maxParallelForks = 1
+}
+
+tasks.register("testAll", Test) {
+    description = "Run all TMS API tests"
+    useTestNG() {
+        suites 'src/test/resources/all-tests.xml'
+        def groups = project.findProperty('groups')
+        if (groups) {
+            includeGroups groups.split(',')
+        }
+    }
+    systemProperty 'environment', System.getProperty('environment', 'qa')
+    maxParallelForks = 1
+}
+
+tasks.register("testTMS", Test) {
+    description = "Run TMS Service tests"
+    useTestNG() {
+        suites 'src/test/resources/tms-tests.xml'
+        def groups = project.findProperty('groups')
+        if (groups) {
+            includeGroups groups.split(',')
+        }
+    }
+    systemProperty 'environment', System.getProperty('environment', 'qa')
+    maxParallelForks = 1
+}
+
+tasks.register("testHelp") {
+    description = "Show available test tasks"
+    doLast {
+        println """
+========================================================================
+  TMS API Test Framework
+========================================================================
+  ./gradlew testAll                        - Run ALL tests
+  ./gradlew testTMS                        - Run TMS tests only
+  ./gradlew testTMS -Pgroups=smoke         - TMS smoke tests
+  ./gradlew testTMS -Denvironment=staging  - TMS on staging
+  ./gradlew test --tests=*SampleTmsTest    - Specific class
+========================================================================
+"""
+    }
+}

@@ -1,0 +1,14 @@
+### IntelliJ IDEA ###
+.idea/
+.gradle/
+target/
+build
+.vscode/
+.test-*.json
+qodana.yaml
+qodana_code_quality.yml
+bin/
+*.iml
+out/
+allure-results/
+allure-report/
