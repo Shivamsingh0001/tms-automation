@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="TMS Service Tests" verbose="1" parallel="classes" thread-count="1">
+    <listeners>
+        <listener class-name="org.delhivery.listeners.TestListener"/>
+    </listeners>
+
+    <test name="TMS API Tests">
+        <classes>
+            <class name="org.delhivery.api.tms.SampleTmsTest"/>
+        </classes>
+    </test>
+</suite>
